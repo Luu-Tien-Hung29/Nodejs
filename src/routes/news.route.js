@@ -3,7 +3,7 @@ const router = express.Router();
 
 const newCotroller = require('../app/controllers/NewControllers');
 
-router.use('/:slug', newCotroller.show);
-router.use('/', newCotroller.index);
+router.get('/:slug', newCotroller.show);
+router.get('/', newCotroller.index);
 
 module.exports = router;
