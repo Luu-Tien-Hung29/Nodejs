@@ -1,24 +1,8 @@
-const Course = require('../models/Course')
+const Course = require('../models/Course.models')
 class SiteController {
     // [get]/
     home(req, res, next) {
         const getCource = async () => {
-            // const session = await Course.find()
-            // try {
-            //     if (session) {
-            //         const dataSend = {
-            //             responseCode: 200,
-            //             data: session,
-            //             message: "Success"
-            //         }
-            //         res.json(dataSend)
-            //     } else {
-            //         next(err)
-            //         res.status(400).json({ error: "ERROR!!!" })
-            //     }
-            // } catch (error) {
-            //     res.json(error)
-            // }
             Course.find({})
                 .then(cources => {
                     const dataSend = {
