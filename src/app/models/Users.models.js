@@ -7,6 +7,7 @@ const Users = new Schema({
 	password: { type: String, maxLength: 255 },
 	fullName: { type: String, maxLength: 255 },
 	name: { type: String, maxLength: 255 },
+	savePassword:{type:Boolean},
 	refreshToken: { type: String, maxLength: 255 },
 	createdAt: { type: Date, default: Date.now },
 	updateddAt: { type: Date, default: Date.now }
