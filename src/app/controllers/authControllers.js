@@ -17,7 +17,6 @@ const getUser = async (username) => {
   }
 };
 const createUsers = async (user) => {
-  console.log("Users:", Users);
   const userNew = await Users.create(user);
   if (userNew) {
     return true;
@@ -45,6 +44,7 @@ class authControllers {
   }
   // [get]/search
   login = async (req, res) => {
+    console.log(req, "13212");
     const username = req.body.userName.toLowerCase();
     const password = req.body.password;
     const save = req.body.savePass;
@@ -94,6 +94,7 @@ class authControllers {
     }
     let refreshToken = jwt.sign(dataForAccessToken, process.env.REFRESH_TOKEN, {
       expiresIn: "30d",
+      algorithm: 'HS256',
     });
     if (!user.refreshToken) {
       const countUpdate = user.__v + 1;
@@ -116,9 +117,8 @@ class authControllers {
       { $set: { savePass: save, updateddAt: new Date() } },
       { upsert: true }
     );
-    console.log(dataSend, "123");
     delete dataSend._doc.password;
-    return res.json({
+    return res.status(200).json({
       responseCode: 200,
       message: "Đăng nhập thành công.",
       type: "Success",
@@ -158,7 +158,7 @@ class authControllers {
           type: "Error",
         });
       }
-      return res.json({
+      return res.status(200).json({
         responseCode: 200,
         message: "Đăng ký thành công!",
         type: "Success",
@@ -166,85 +166,94 @@ class authControllers {
     }
   };
   refreshToken = async (req, res) => {
-      // Lấy access token từ header
-      const accessTokenFromHeader = req.headers.x_authorization;
-      if (!accessTokenFromHeader) {
-        return res.status(200).json({
-          responseCode: 201,
-          message: "Không tìm thấy access token.",
-          type: "Error",
-        });
-      }
-
-      // Lấy refresh token từ body
-      const refreshTokenFromBody = req.body.refreshToken;
-      if (!refreshTokenFromBody) {
-        return res.status(200).json({
-            responseCode: 202,
-            message: "Không tìm thấy refresh token.",
-            type: "Error",
-          });
-      }
-
-      const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-      const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
-
-      // Decode access token đó
-      const decoded = await authMethod.decodeToken(
-        accessTokenFromHeader,
-        accessTokenSecret
-      );
-      if (!decoded) {
-        return res.status(200).json({
-            responseCode: 203,
-            message: "Access token không hợp lệ.",
-            type: "Error",
-          });
-      }
-
-      const username = decoded.payload.username; // Lấy username từ payload
-
-      const user = await userModel.getUser(username);
-      if (!user) {
-        return res.status(200).json({
-            responseCode: 204,
-            message: "User không tồn tại.",
-            type: "Error",
-          });
-      }
-
-      if (refreshTokenFromBody !== user.refreshToken) {
-        return res.status(200).json({
-            responseCode: 205,
-            message: "Refresh token không hợp lệ.",
-            type: "Error",
-          });
-      }
-
-      // Tạo access token mới
-      const dataForAccessToken = {
-        username,
-      };
-
-      const accessToken = await authMethod.generateToken(
-        dataForAccessToken,
-        accessTokenSecret,
-        accessTokenLife
-      );
-      if (!accessToken) {
-        return res.status(200).json({
-            responseCode: 206,
-            message:"Tạo access token không thành công, vui lòng thử lại.",
-            type: "Error",
-          });
-      }
+    // Lấy access token từ header
+    console.log(req.body,'b');
+    const accessTokenFromHeader = req.headers.x_authorization;
+    if (!accessTokenFromHeader) {
       return res.status(200).json({
-        responseCode: 200,
-        message: "Success!",
-        type: "Success",
-        data:{accessToken}
+        responseCode: 201,
+        message: "Không tìm thấy access token.",
+        type: "Error",
       });
+    }
+
+    // Lấy refresh token từ body
+    const refreshTokenFromBody = req.body.refreshToken;
+    if (!refreshTokenFromBody) {
+      return res.status(200).json({
+        responseCode: 202,
+        message: "Không tìm thấy refresh token.",
+        type: "Error",
+      });
+    }
+
+    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+    const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
+
+    // Decode access token đó
+    const decoded = await authMethod.decodeToken(
+      accessTokenFromHeader,
+      accessTokenSecret
+    );
+    if (!decoded) {
+      return res.status(200).json({
+        responseCode: 203,
+        message: "Access token không hợp lệ.",
+        type: "Error",
+      });
+    }
+
+    const username = decoded.payload.username; // Lấy username từ payload
+
+    const user = await getUser(username);
+    if (!user) {
+      return res.status(200).json({
+        responseCode: 204,
+        message: "User không tồn tại.",
+        type: "Error",
+      });
+    }
+
+    if (refreshTokenFromBody !== user.refreshToken) {
+      return res.status(200).json({
+        responseCode: 205,
+        message: "Refresh token không hợp lệ.",
+        type: "Error",
+      });
+    }
+
+    // Tạo access token mới
+    const dataForAccessToken = {
+      username,
     };
+
+    const accessToken = await authMethod.generateToken(
+      dataForAccessToken,
+      accessTokenSecret,
+      accessTokenLife
+    );
+    if (!accessToken) {
+      return res.status(200).json({
+        responseCode: 206,
+        message: "Tạo access token không thành công, vui lòng thử lại.",
+        type: "Error",
+      });
+    }
+    return res.status(200).json({
+      responseCode: 200,
+      message: "Success!",
+      type: "Success",
+      data: { accessToken },
+    });
   };
+  user = async (req, res) => {
+    return res.status(200).json({
+      responseCode: 200,
+      message: "Lấy dữ liệu thành công",
+      type: "Success",
+      data: req.user,
+    });
+  };
+}
 
 module.exports = new authControllers();

@@ -33,3 +33,11 @@ exports.decodeToken = async (token, secretKey) => {
 		return null;
 	}
 };
+exports.verifyToken = async (token, secretKey) => {
+	try {
+		return await verify(token, secretKey);
+	} catch (error) {
+		console.log(`Error in verify access token:  + ${error}`);
+		return null;
+	}
+};
