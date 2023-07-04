@@ -10,7 +10,6 @@ const jwt = require("jsonwebtoken");
 const getUser = async (username) => {
   try {
     const data = await Users.findOne({ phoneNumber: username });
-    console.log(data, "data");
     return data;
   } catch {
     return null;
@@ -44,12 +43,10 @@ class authControllers {
   }
   // [get]/search
   login = async (req, res) => {
-    console.log(req, "13212");
     const username = req.body.userName.toLowerCase();
     const password = req.body.password;
     const save = req.body.savePass;
     const user = await getUser(username);
-    console.log(user, "user");
     const dataSend = { ...user };
 
     if (!username || !password) {
@@ -167,8 +164,8 @@ class authControllers {
   };
   refreshToken = async (req, res) => {
     // Lấy access token từ header
-    console.log(req.body,'b');
     const accessTokenFromHeader = req.headers.x_authorization;
+    console.log(req.body);
     if (!accessTokenFromHeader) {
       return res.status(200).json({
         responseCode: 201,

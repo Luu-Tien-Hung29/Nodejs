@@ -11,6 +11,7 @@ const port = 5000;
 
 
 
+
 app.use(express.json());
 require("dotenv").config();
 
@@ -21,6 +22,7 @@ app.use(morgan('combined'));
 
 // connect
 db.connect()
+
 
 app.engine(
     'hbs',
@@ -33,6 +35,7 @@ app.set('views', path.join(__dirname, 'reSource', 'views'));
 
 // routes init
 route(app);
+
 
 app.listen(port, () => {
     console.log(`Listening on port localhost:${port}`);
