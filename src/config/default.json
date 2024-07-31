@@ -1,0 +1,10 @@
+{
+    "db": {
+        "host": "125.212.238.157",
+        "port": "3306",
+        "user": "kingofbet",
+        "password": "Kingbet123#",
+        "database": "kingofbet_crawler",
+        "connection_limit": 100
+    }
+}

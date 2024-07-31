@@ -64,6 +64,7 @@ class authControllers {
       });
     }
     const isPasswordValid = bcrypt.compareSync(password, user.password);
+    console.log(bcrypt.hashSync("123456", SALT_ROUNDS));
     if (!isPasswordValid) {
       return res.status(200).json({
         responseCode: 203,
@@ -91,7 +92,7 @@ class authControllers {
     }
     let refreshToken = jwt.sign(dataForAccessToken, process.env.REFRESH_TOKEN, {
       expiresIn: "30d",
-      algorithm: 'HS256',
+      algorithm: "HS256",
     });
     if (!user.refreshToken) {
       const countUpdate = user.__v + 1;
